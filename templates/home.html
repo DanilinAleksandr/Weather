@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Приложение для прогноза погоды</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .forecast-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Прогноз погоды</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <p class="error">{{ messages[0] }}</p>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="text" name="city" placeholder="Введите город">
+            <select name="day">
+                {% for i in range(6) %}
+                    <option value="{{ i }}" {% if i == day %}selected{% endif %}>{{ days[i]|datetime }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Получить прогноз">
+        </form>
+
+        {% if weather %}
+            <h2>{{ weather['city']['name'] }}</h2>
+            <div class="forecast-grid">
+                {% for forecast in forecasts %}
+                    <div class="forecast-item">
+                        <p>Время: {{ forecast['dt_txt'] }}</p>
+                        <p>Температура: {{ forecast['main']['temp'] }}°C</p>
+                        <p>Описание: {{ forecast['weather'][0]['description'] }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
